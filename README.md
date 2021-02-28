@@ -44,6 +44,8 @@ remotes::install_git("https://git.rud.is/hrbrmstr/brimr.git")
 remotes::install_gitlab("hrbrmstr/brimr")
 # or
 remotes::install_bitbucket("hrbrmstr/brimr")
+# or
+remotes::install_github("hrbrmstr/brimr")
 ```
 
 NOTE: To use the ‘remotes’ install options you will need to have the
