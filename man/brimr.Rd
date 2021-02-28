@@ -4,9 +4,11 @@
 \name{brimr}
 \alias{brimr}
 \alias{brimr-package}
-\title{...}
+\title{Tools to Work with Brim and zqd}
 \description{
-A good description goes here otherwise CRAN checks fail.
+Brim (\url{https://github.com/brimsec/brim}) enables efficient query
+operations on large packqet captures and log sources, such as Zeek. Tools
+are provided to with with Brim components, including the Brim zqd query back-end.
 }
 \seealso{
 Useful links:

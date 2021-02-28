@@ -1,6 +1,6 @@
 Package: brimr
 Type: Package
-Title: brimr title goes here otherwise CRAN checks fail
+Title: Tools to Work with Brim and zqd
 Version: 0.1.0
 Date: 2021-02-28
 Authors@R: c(
@@ -8,17 +8,20 @@ Authors@R: c(
            comment = c(ORCID = "0000-0001-5670-2640"))
   )
 Maintainer: Bob Rudis <bob@rud.is>
-Description: A good description goes here otherwise CRAN checks fail.
+Description: Brim (<https://github.com/brimsec/brim>) enables efficient query
+    operations on large packqet captures and log sources, such as Zeek. Tools
+    are provided to with with Brim components, including the Brim zqd query back-end.
 URL: https://git.rud.is/hrbrmstr/brimr
 BugReports: https://git.rud.is/hrbrmstr/brimr/issues
 Encoding: UTF-8
-License: AGPL
+License: MIT + file LICENSE
 Suggests: 
     covr, tinytest
 Depends: 
-    R (>= 3.5.0)
+    R (>= 3.6.0)
 Imports: 
     httr,
-    jsonlite
+    jsonlite,
+    stringi
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

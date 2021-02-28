@@ -33,10 +33,25 @@ hrbrpkghelpr::install_block()
 
 ```{r lib-ex}
 library(brimr)
+library(tibble)
 
 # current version
 packageVersion("brimr")
 
+```
+
+```{r ex-01}
+brim_spaces()
+
+zql <- '_path=conn | count() by id.orig_h, id.resp_h, id.resp_p | sort id.orig_h, id.resp_h, id.resp_p'
+
+cat(jsonlite::toJSON(jsonlite::fromJSON(brim_ast(zql)), pretty = TRUE))
+
+space <- "2021-02-17-Trickbot-gtag-rob13-infection-in-AD-environment.pcap"
+
+r <- brim_search(space, zql)
+
+str(r, 2)
 ```
 
 ## brimr Metrics
