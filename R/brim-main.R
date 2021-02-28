@@ -46,7 +46,7 @@ brim_spaces <- function(host = brim_host()) {
   out <- httr::content(res, as = "text", encoding = "UTF-8")
 
   out <- jsonlite::fromJSON(out)
-  class(out) <- c("tbl_df", "tbl", "data.frame")
+
   out
 
 }
@@ -93,8 +93,108 @@ brim_search <- function(space_name, zql, host = brim_host()) {
   res <- brim_search_raw(space_name = space_name, zql = zql, host = host)
   res <- stringi::stri_split_lines(res, omit_empty = TRUE)
   res <- unlist(res)
-  res <- lapply(res, jsonlite::fromJSON)
+  res <- lapply(res, jsonlite::fromJSON, simplifyVector=TRUE, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
 
-  invisible(res)
+  class(res) <- c("brim_search_results", "list")
+
+  res
+
+}
+
+#' @rdname brim_search
+#' @param x a `brim_search_result` object
+#' @param ... unused
+#' @export
+print.brim_search_results <- function(x, ...) {
+
+  stats <- x[[which(sapply(x, function(.x) .x$type == "SearchStats"))]]
+  as.numeric(
+    as.POSIXct(stats$update_time$sec, origin = "1970-01-01") -
+      as.POSIXct(stats$start_time$sec, origin = "1970-01-01"), "secs"
+  ) -> delta
+
+  cat(
+    "ZQL query took ", scales::comma(delta, accuracy = 0.0001), " seconds", "; ",
+    scales::comma(stats$records_matched), " records matched", "; ",
+    scales::comma(stats$records_read), " records read", "; ",
+    scales::comma(stats$bytes_read), " bytes read", "\n", sep = ""
+  )
+
+}
+
+# TODO: Handle array, set, enum, union,
+process_record <- function(aliases, schema, value) {
+
+  nam <- schema[["name"]]
+  typ <- schema[["type"]]
+  typ <- ifelse(is.na(aliases[typ]), typ, aliases[typ])
+
+  switch(
+    typ,
+    record = mapply(function(sch, val) {
+      process_record(aliases, sch, val)
+    }, schema[["of"]], value),
+
+    null = set_names(NA, nam),
+    bstring = set_names(list(value), nam),
+    uint8 = set_names(as.integer(value), nam),
+    uint16 = set_names(as.integer(value), nam),
+    uint32 = set_names(as.integer(value), nam),
+    uint64 = set_names(as.integer(value), nam),
+    int8 = set_names(as.integer(value), nam),
+    int16 = set_names(as.integer(value), nam),
+    int32 = set_names(as.integer(value), nam),
+    int64 = set_names(as.integer(value), nam),
+    time = set_names(anytime::anytime(value), nam),
+    duration = set_names(as.numeric(value), nam),
+    float16 = set_names(as.numeric(value), nam),
+    float32 = set_names(as.numeric(value), nam),
+    float64 = set_names(as.numeric(value), nam),
+    decimal = set_names(as.numeric(value), nam),
+    bool = set_names(as.logical(value), nam),
+    ip = set_names(as.character(value), nam),
+    net = set_names(as.character(value), nam)#,
+    # net = set_names(list(ipaddress::as_ip_network(value)), nam),
+    # ip = set_names(list(ipaddress::as_ip_address(value)), nam)
+  )
+
+}
+
+#' Turn Brim/zqd search results into a data frame
+#'
+#' @param x Brim/zqd search results
+#' @export
+tidy_brim <- function(x) {
+
+  records <- x[[which(sapply(x, function(.x) .x$type == "SearchRecords"))]][["records"]]
+
+  aliases <- data.frame(name = character(0), type = character(0))
+
+  rbind.data.frame(
+    aliases,
+    do.call(rbind.data.frame, lapply(records[which(sapply(records, hasName, "aliases"))], function(.x) as.data.frame(.x$aliases)))
+  ) -> aliases
+
+  aliases <- set_names(aliases$type, aliases$name)
+
+  schemas <- list()
+
+  for (rec in records[which(sapply(records, hasName, "schema"))]) {
+    schemas[[as.character(rec$id)]] <- rec$schema
+  }
+
+  lapply(records[which(sapply(records, hasName, "values"))], function(.x) {
+    process_record(aliases, schemas[[as.character(.x$id)]], .x[["values"]])
+  }) -> tmp
+
+  lapply(tmp, function(.x) {
+    do.call(cbind.data.frame, lapply(.x, function(.y) {
+      if (!is.list(.y)) as.list(.y) else .y
+    }))
+  }) -> tmp
+
+  tmp <- do.call(rbind.data.frame, tmp)
+
+  tmp
 
 }

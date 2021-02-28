@@ -35,6 +35,7 @@ The following functions are implemented:
     retrieve processed results
 -   `brim_spaces`: Retrieve active Brim spaces from the specified Brim
     instance
+-   `tidy_brim`: Turn Brim/zqd search results into a data frame
 
 ## Installation
 
@@ -62,247 +63,130 @@ packageVersion("brimr")
 ## [1] '0.1.0'
 ```
 
+### Available Brim “spaces”
+
 ``` r
 brim_spaces()
-## # A tibble: 1 x 4
-##   id                 name                              data_path                                            storage_kind
-## * <chr>              <chr>                             <chr>                                                <chr>       
-## 1 sp_1p6pwLgtsESYBT… 2021-02-17-Trickbot-gtag-rob13-i… file:///Users/hrbrmstr/Library/Application%20Suppor… filestore
+##                               id                                                            name
+## 1 sp_1p6pwLgtsESYBTHU9PL9fcl2iBn 2021-02-17-Trickbot-gtag-rob13-infection-in-AD-environment.pcap
+##                                                                                              data_path storage_kind
+## 1 file:///Users/hrbrmstr/Library/Application%20Support/Brim/data/spaces/sp_1p6pwLgtsESYBTHU9PL9fcl2iBn    filestore
+```
 
-zql <- '_path=conn | count() by id.orig_h, id.resp_h, id.resp_p | sort id.orig_h, id.resp_h, id.resp_p'
+### Sample ZQL query
 
-cat(jsonlite::toJSON(jsonlite::fromJSON(brim_ast(zql)), pretty = TRUE))
+``` r
+# Z query to fetch Zeek connection data to create our network connection graph
+zql1 <- '_path=conn | count() by id.orig_h, id.resp_h, id.resp_p | sort id.orig_h, id.resp_h, id.resp_p'
+
+cat(
+  substr(jsonlite::toJSON(jsonlite::fromJSON(brim_ast(zql1)), pretty = TRUE), 1, 100), "..."
+)
 ## {
 ##   "op": ["SequentialProc"],
 ##   "procs": [
 ##     {
 ##       "op": "FilterProc",
 ##       "filter": {
-##         "op": "CompareField",
-##         "comparator": "=",
-##         "field": {
-##           "op": "BinaryExpr",
-##           "operator": ".",
-##           "lhs": {
-##             "op": "RootRecord"
-##           },
-##           "rhs": {
-##             "op": "Identifier",
-##             "name": "_path"
-##           }
-##         },
-##         "value": {
-##           "op": "Literal",
-##           "type": "string",
-##           "value": "conn"
-##         }
-##       },
-##       "keys": {},
-##       "reducers": {},
-##       "fields": {}
-##     },
-##     {
-##       "op": "GroupByProc",
-##       "filter": {
-##         "field": {
-##           "lhs": {},
-##           "rhs": {}
-##         },
-##         "value": {}
-##       },
-##       "limit": 0,
-##       "keys": [
-##         {
-##           "op": "Assignment",
-##           "rhs": {
-##             "op": "BinaryExpr",
-##             "operator": ".",
-##             "lhs": {
-##               "op": "BinaryExpr",
-##               "operator": ".",
-##               "lhs": {
-##                 "op": "RootRecord"
-##               },
-##               "rhs": {
-##                 "op": "Identifier",
-##                 "name": "id"
-##               }
-##             },
-##             "rhs": {
-##               "op": "Identifier",
-##               "name": "orig_h"
-##             }
-##           }
-##         },
-##         {
-##           "op": "Assignment",
-##           "rhs": {
-##             "op": "BinaryExpr",
-##             "operator": ".",
-##             "lhs": {
-##               "op": "BinaryExpr",
-##               "operator": ".",
-##               "lhs": {
-##                 "op": "RootRecord"
-##               },
-##               "rhs": {
-##                 "op": "Identifier",
-##                 "name": "id"
-##               }
-##             },
-##             "rhs": {
-##               "op": "Identifier",
-##               "name": "resp_h"
-##             }
-##           }
-##         },
-##         {
-##           "op": "Assignment",
-##           "rhs": {
-##             "op": "BinaryExpr",
-##             "operator": ".",
-##             "lhs": {
-##               "op": "BinaryExpr",
-##               "operator": ".",
-##               "lhs": {
-##                 "op": "RootRecord"
-##               },
-##               "rhs": {
-##                 "op": "Identifier",
-##                 "name": "id"
-##               }
-##             },
-##             "rhs": {
-##               "op": "Identifier",
-##               "name": "resp_p"
-##             }
-##           }
-##         }
-##       ],
-##       "reducers": [
-##         {
-##           "op": "Assignment",
-##           "rhs": {
-##             "op": "Reducer",
-##             "operator": "count"
-##           }
-##         }
-##       ],
-##       "fields": {}
-##     },
-##     {
-##       "op": "SortProc",
-##       "filter": {
-##         "field": {
-##           "lhs": {},
-##           "rhs": {}
-##         },
-##         "value": {}
-##       },
-##       "keys": {},
-##       "reducers": {},
-##       "fields": [
-##         {
-##           "op": "BinaryExpr",
-##           "operator": ".",
-##           "lhs": {
-##             "op": "BinaryExpr",
-##             "operator": ".",
-##             "lhs": {
-##               "op": "RootRecord"
-##             },
-##             "rhs": {
-##               "op": "Identifier",
-##               "name": "id"
-##             }
-##           },
-##           "rhs": {
-##             "op": "Identifier",
-##             "name": "orig_h"
-##           }
-##         },
-##         {
-##           "op": "BinaryExpr",
-##           "operator": ".",
-##           "lhs": {
-##             "op": "BinaryExpr",
-##             "operator": ".",
-##             "lhs": {
-##               "op": "RootRecord"
-##             },
-##             "rhs": {
-##               "op": "Identifier",
-##               "name": "id"
-##             }
-##           },
-##           "rhs": {
-##             "op": "Identifier",
-##             "name": "resp_h"
-##           }
-##         },
-##         {
-##           "op": "BinaryExpr",
-##           "operator": ".",
-##           "lhs": {
-##             "op": "BinaryExpr",
-##             "operator": ".",
-##             "lhs": {
-##               "op": "RootRecord"
-##             },
-##             "rhs": {
-##               "op": "Identifier",
-##               "name": "id"
-##             }
-##           },
-##           "rhs": {
-##             "op": "Identifier",
-##             "name": "resp_p"
-##           }
-##         }
-##       ],
-##       "sortdir": 1,
-##       "nullsfirst": false
-##     }
-##   ]
-## }
+##         ...
+```
 
+### Let’s execute the query
+
+``` r
 space <- "2021-02-17-Trickbot-gtag-rob13-infection-in-AD-environment.pcap"
 
-r <- brim_search(space, zql)
+r1 <- brim_search(space, zql1)
 
-str(r, 2)
-## List of 5
-##  $ :List of 2
-##   ..$ type   : chr "TaskStart"
-##   ..$ task_id: int 0
-##  $ :List of 3
-##   ..$ type      : chr "SearchRecords"
-##   ..$ channel_id: int 0
-##   ..$ records   :'data.frame':   74 obs. of  4 variables:
-##  $ :List of 3
-##   ..$ type      : chr "SearchEnd"
-##   ..$ channel_id: int 0
-##   ..$ reason    : chr "eof"
-##  $ :List of 7
-##   ..$ type           : chr "SearchStats"
-##   ..$ start_time     :List of 2
-##   ..$ update_time    :List of 2
-##   ..$ bytes_read     : int 238052
-##   ..$ bytes_matched  : int 54486
-##   ..$ records_read   : int 1082
-##   ..$ records_matched: int 384
-##  $ :List of 2
-##   ..$ type   : chr "TaskEnd"
-##   ..$ task_id: int 0
+r1
+## ZQL query took 0.0000 seconds; 384 records matched; 1,082 records read; 238,052 bytes read
+
+(r1 <- as_tibble(tidy_brim(r1)))
+## # A tibble: 74 x 4
+##    orig_h      resp_h       resp_p count
+##    <chr>       <chr>        <chr>  <int>
+##  1 10.2.17.2   10.2.17.101  49787      1
+##  2 10.2.17.101 3.222.126.94 80         1
+##  3 10.2.17.101 10.2.17.1    445        1
+##  4 10.2.17.101 10.2.17.2    53        97
+##  5 10.2.17.101 10.2.17.2    88        27
+##  6 10.2.17.101 10.2.17.2    123        5
+##  7 10.2.17.101 10.2.17.2    135        8
+##  8 10.2.17.101 10.2.17.2    137        2
+##  9 10.2.17.101 10.2.17.2    138        2
+## 10 10.2.17.101 10.2.17.2    389       37
+## # … with 64 more rows
 ```
+
+### Let’s try one that processes the Suricata alerts
+
+``` r
+# Z query to fetch Suricata alerts including the count of alerts per source:destination 
+zql2 <- "event_type=alert | count() by src_ip, dest_ip, dest_port, alert.severity, alert.signature | sort src_ip, dest_ip, dest_port, alert.severity, alert.signature"
+
+r2 <- brim_search(space, zql2)
+
+r2
+## ZQL query took 0.0000 seconds; 47 records matched; 870 records read; 238,660 bytes read
+
+(r2 <- (as_tibble(tidy_brim(r2))))
+## # A tibble: 35 x 6
+##    src_ip     dest_ip    dest_port severity signature                                                              count
+##    <chr>      <chr>          <int>    <int> <chr>                                                                  <int>
+##  1 10.2.17.2  10.2.17.1…     49674        3 SURICATA Applayer Detect protocol only one direction                       1
+##  2 10.2.17.2  10.2.17.1…     49680        3 SURICATA Applayer Detect protocol only one direction                       1
+##  3 10.2.17.2  10.2.17.1…     49687        3 SURICATA Applayer Detect protocol only one direction                       1
+##  4 10.2.17.2  10.2.17.1…     49704        3 SURICATA Applayer Detect protocol only one direction                       1
+##  5 10.2.17.2  10.2.17.1…     49709        3 SURICATA Applayer Detect protocol only one direction                       1
+##  6 10.2.17.2  10.2.17.1…     49721        3 SURICATA Applayer Detect protocol only one direction                       1
+##  7 10.2.17.2  10.2.17.1…     50126        3 SURICATA Applayer Detect protocol only one direction                       1
+##  8 10.2.17.1… 3.222.126…        80        2 ET POLICY curl User-Agent Outbound                                         1
+##  9 10.2.17.1… 36.95.27.…       443        1 ET HUNTING Suspicious POST with Common Windows Process Names - Possib…     1
+## 10 10.2.17.1… 36.95.27.…       443        1 ET MALWARE Win32/Trickbot Data Exfiltration                                1
+## # … with 25 more rows
+```
+
+``` r
+library(igraph)
+library(ggraph)
+library(tidyverse)
+
+gdf <- count(r1, orig_h, resp_h, wt=count)
+
+count(gdf, node = resp_h, wt=n, name = "in_degree") %>% 
+  full_join(
+    count(gdf, node = orig_h, name = "out_degree")
+  ) %>% 
+  mutate_at(
+    vars(in_degree, out_degree),
+    replace_na, 1
+  ) %>% 
+  arrange(in_degree) -> vdf
+
+g <- graph_from_data_frame(gdf, vertices = vdf)
+
+ggraph(g, layout = "linear") +
+  geom_node_point(
+    aes(size = in_degree), shape = 21
+  ) +
+  geom_edge_arc(
+    width = 0.125, 
+    arrow = arrow(
+      length = unit(5, "pt"),
+      type = "closed"
+    )
+  )
+```
+
+<img src="man/figures/README-graph-1.png" width="864" />
 
 ## brimr Metrics
 
-| Lang | \# Files |  (%) | LoC |  (%) | Blank lines |  (%) | \# Lines |  (%) |
-|:-----|---------:|-----:|----:|-----:|------------:|-----:|---------:|-----:|
-| R    |        3 | 0.38 |  53 | 0.39 |          25 | 0.27 |       41 | 0.29 |
-| Rmd  |        1 | 0.12 |  15 | 0.11 |          21 | 0.23 |       30 | 0.21 |
-| SUM  |        4 | 0.50 |  68 | 0.50 |          46 | 0.50 |       71 | 0.50 |
+| Lang | \# Files | (%) | LoC |  (%) | Blank lines |  (%) | \# Lines |  (%) |
+|:-----|---------:|----:|----:|-----:|------------:|-----:|---------:|-----:|
+| R    |        4 | 0.4 | 123 | 0.36 |          48 | 0.29 |       53 | 0.27 |
+| Rmd  |        1 | 0.1 |  47 | 0.14 |          35 | 0.21 |       44 | 0.23 |
+| SUM  |        5 | 0.5 | 170 | 0.50 |          83 | 0.50 |       97 | 0.50 |
 
 clock Package Metrics for brimr
 

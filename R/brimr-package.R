@@ -8,7 +8,8 @@
 #' @name brimr
 #' @keywords internal
 #' @author Bob Rudis (bob@@rud.is)
-#' @import httr
+#' @import httr ipaddress
+#' @importFrom scales comma
 #' @importFrom stringi stri_split_lines
 #' @importFrom jsonlite fromJSON
 "_PACKAGE"

@@ -2,9 +2,12 @@
 % Please edit documentation in R/brim-main.R
 \name{brim_search}
 \alias{brim_search}
+\alias{print.brim_search_results}
 \title{Post a ZQL query to the given Brim instance and retrieve processed results}
 \usage{
 brim_search(space_name, zql, host = brim_host())
+
+\method{print}{brim_search_results}(x, ...)
 }
 \arguments{
 \item{space_name}{name of the Brim space to use as the search data source}
@@ -12,6 +15,10 @@ brim_search(space_name, zql, host = brim_host())
 \item{zql}{the ZQL query}
 
 \item{host}{see \code{\link[=brim_host]{brim_host()}}}
+
+\item{x}{a \code{brim_search_result} object}
+
+\item{...}{unused}
 }
 \description{
 Post a ZQL query to the given Brim instance and retrieve processed results

@@ -40,18 +40,78 @@ packageVersion("brimr")
 
 ```
 
-```{r ex-01}
+### Available Brim "spaces"
+
+```{r available-brim-spaces}
 brim_spaces()
+```
 
-zql <- '_path=conn | count() by id.orig_h, id.resp_h, id.resp_p | sort id.orig_h, id.resp_h, id.resp_p'
+### Sample ZQL query
 
-cat(jsonlite::toJSON(jsonlite::fromJSON(brim_ast(zql)), pretty = TRUE))
+```{r sample-zql-query}
+# Z query to fetch Zeek connection data to create our network connection graph
+zql1 <- '_path=conn | count() by id.orig_h, id.resp_h, id.resp_p | sort id.orig_h, id.resp_h, id.resp_p'
 
+cat(
+  substr(jsonlite::toJSON(jsonlite::fromJSON(brim_ast(zql1)), pretty = TRUE), 1, 100), "..."
+)
+```
+
+### Let's execute the query
+
+```{r zeek-query-execution}
 space <- "2021-02-17-Trickbot-gtag-rob13-infection-in-AD-environment.pcap"
 
-r <- brim_search(space, zql)
+r1 <- brim_search(space, zql1)
 
-str(r, 2)
+r1
+
+(r1 <- as_tibble(tidy_brim(r1)))
+```
+
+### Let's try one that processes the Suricata alerts
+
+```{r suricata-query-execution}
+# Z query to fetch Suricata alerts including the count of alerts per source:destination 
+zql2 <- "event_type=alert | count() by src_ip, dest_ip, dest_port, alert.severity, alert.signature | sort src_ip, dest_ip, dest_port, alert.severity, alert.signature"
+
+r2 <- brim_search(space, zql2)
+
+r2
+
+(r2 <- (as_tibble(tidy_brim(r2))))
+```
+
+```{r graph, fig.width = 9}
+library(igraph)
+library(ggraph)
+library(tidyverse)
+
+gdf <- count(r1, orig_h, resp_h, wt=count)
+
+count(gdf, node = resp_h, wt=n, name = "in_degree") %>% 
+  full_join(
+    count(gdf, node = orig_h, name = "out_degree")
+  ) %>% 
+  mutate_at(
+    vars(in_degree, out_degree),
+    replace_na, 1
+  ) %>% 
+  arrange(in_degree) -> vdf
+
+g <- graph_from_data_frame(gdf, vertices = vdf)
+
+ggraph(g, layout = "linear") +
+  geom_node_point(
+    aes(size = in_degree), shape = 21
+  ) +
+  geom_edge_arc(
+    width = 0.125, 
+    arrow = arrow(
+      length = unit(5, "pt"),
+      type = "closed"
+    )
+  )
 ```
 
 ## brimr Metrics

@@ -22,6 +22,8 @@ Depends:
 Imports: 
     httr,
     jsonlite,
+    scales,
+    ipaddress,
     stringi
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
