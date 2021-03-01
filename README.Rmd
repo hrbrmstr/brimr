@@ -42,13 +42,13 @@ packageVersion("brimr")
 
 ### Available Brim "spaces"
 
-```{r available-brim-spaces}
+```{r available-brim-spaces, cache=TRUE}
 brim_spaces()
 ```
 
 ### Sample ZQL query
 
-```{r sample-zql-query}
+```{r sample-zql-query, cache=TRUE}
 # Z query to fetch Zeek connection data to create our network connection graph
 zql1 <- '_path=conn | count() by id.orig_h, id.resp_h, id.resp_p | sort id.orig_h, id.resp_h, id.resp_p'
 
@@ -59,7 +59,7 @@ cat(
 
 ### Let's execute the query
 
-```{r zeek-query-execution}
+```{r zeek-query-execution, cache=TRUE}
 space <- "2021-02-17-Trickbot-gtag-rob13-infection-in-AD-environment.pcap"
 
 r1 <- brim_search(space, zql1)
@@ -71,7 +71,7 @@ r1
 
 ### Let's try one that processes the Suricata alerts
 
-```{r suricata-query-execution}
+```{r suricata-query-execution, cache=TRUE}
 # Z query to fetch Suricata alerts including the count of alerts per source:destination 
 zql2 <- "event_type=alert | count() by src_ip, dest_ip, dest_port, alert.severity, alert.signature | sort src_ip, dest_ip, dest_port, alert.severity, alert.signature"
 
@@ -82,7 +82,7 @@ r2
 (r2 <- (as_tibble(tidy_brim(r2))))
 ```
 
-```{r graph, fig.width = 9}
+```{r graph, fig.width = 9, cache=TRUE}
 library(igraph)
 library(ggraph)
 library(tidyverse)

@@ -7,7 +7,7 @@
 \title{Tools to Work with Brim and zqd}
 \description{
 Brim (\url{https://github.com/brimsec/brim}) enables efficient query
-operations on large packqet captures and log sources, such as Zeek. Tools
+operations on large packet captures and log sources, such as Zeek. Tools
 are provided to with with Brim components, including the Brim zqd query back-end.
 }
 \seealso{
