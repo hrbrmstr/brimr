@@ -114,6 +114,17 @@ ggraph(g, layout = "linear") +
   )
 ```
 
+### Use `zq` directly
+
+```{r zq_cmdline, cache=TRUE}
+zq_cmd(
+  c(
+    '"* | cut ts,id.orig_h,id.orig_p"', # note the quotes
+    system.file("logs", "conn.log.gz", package = "brimr")
+   )
+ )
+```
+
 ## brimr Metrics
 
 ```{r cloc, echo=FALSE}

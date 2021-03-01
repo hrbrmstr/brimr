@@ -16,7 +16,7 @@ BugReports: https://git.rud.is/hrbrmstr/brimr/issues
 Encoding: UTF-8
 License: MIT + file LICENSE
 Suggests: 
-    covr, tinytest
+    covr, tinytest, data.tab.e
 Depends: 
     R (>= 3.6.0)
 Imports: 
@@ -24,6 +24,7 @@ Imports:
     jsonlite,
     scales,
     ipaddress,
-    stringi
+    stringi,
+    ndjson
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1

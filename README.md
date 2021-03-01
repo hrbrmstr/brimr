@@ -36,6 +36,7 @@ The following functions are implemented:
 -   `brim_spaces`: Retrieve active Brim spaces from the specified Brim
     instance
 -   `tidy_brim`: Turn Brim/zqd search results into a data frame
+-   `zq_cmd`: Execute a zq command line
 
 ## Installation
 
@@ -180,13 +181,36 @@ ggraph(g, layout = "linear") +
 
 <img src="man/figures/README-graph-1.png" width="864" />
 
+### Use `zq` directly
+
+``` r
+zq_cmd(
+  c(
+    '"* | cut ts,id.orig_h,id.orig_p"', # note the quotes
+    system.file("logs", "conn.log.gz", package = "brimr")
+   )
+ )
+##           id.orig_h id.orig_p                          ts
+##   1:  10.164.94.120     39681 2018-03-24T17:15:21.255387Z
+##   2:    10.47.25.80     50817 2018-03-24T17:15:21.411148Z
+##   3:    10.47.25.80     50817 2018-03-24T17:15:21.926018Z
+##   4:    10.47.25.80     50813 2018-03-24T17:15:22.690601Z
+##   5:    10.47.25.80     50813 2018-03-24T17:15:23.205187Z
+##  ---                                                     
+## 988: 10.174.251.215     33003 2018-03-24T17:15:21.429238Z
+## 989: 10.174.251.215     33003 2018-03-24T17:15:21.429315Z
+## 990: 10.174.251.215     33003 2018-03-24T17:15:21.429479Z
+## 991:  10.164.94.120     38265 2018-03-24T17:15:21.427375Z
+## 992: 10.174.251.215     33003 2018-03-24T17:15:21.433306Z
+```
+
 ## brimr Metrics
 
-| Lang | \# Files | (%) | LoC |  (%) | Blank lines |  (%) | \# Lines |  (%) |
-|:-----|---------:|----:|----:|-----:|------------:|-----:|---------:|-----:|
-| R    |        4 | 0.4 | 123 | 0.36 |          48 | 0.29 |       53 | 0.27 |
-| Rmd  |        1 | 0.1 |  47 | 0.14 |          35 | 0.21 |       44 | 0.23 |
-| SUM  |        5 | 0.5 | 170 | 0.50 |          83 | 0.50 |       97 | 0.50 |
+| Lang | \# Files |  (%) | LoC |  (%) | Blank lines |  (%) | \# Lines |  (%) |
+|:-----|---------:|-----:|----:|-----:|------------:|-----:|---------:|-----:|
+| R    |        5 | 0.42 | 180 | 0.39 |          71 | 0.33 |       86 | 0.32 |
+| Rmd  |        1 | 0.08 |  53 | 0.11 |          37 | 0.17 |       47 | 0.18 |
+| SUM  |        6 | 0.50 | 233 | 0.50 |         108 | 0.50 |      133 | 0.50 |
 
 clock Package Metrics for brimr
 

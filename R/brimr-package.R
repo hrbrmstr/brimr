@@ -9,6 +9,7 @@
 #' @keywords internal
 #' @author Bob Rudis (bob@@rud.is)
 #' @import httr ipaddress
+#' @importFrom ndjson stream_in
 #' @importFrom scales comma
 #' @importFrom stringi stri_split_lines
 #' @importFrom jsonlite fromJSON
